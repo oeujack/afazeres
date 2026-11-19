@@ -1,0 +1,98 @@
+/* ============ MICROINTERAÇÕES (§6) ============ */
+@keyframes todo-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes highlight-flash {
+  from {
+    background-color: var(--color-highlight-soft);
+  }
+  to {
+    background-color: var(--color-surface);
+  }
+}
+
+@keyframes todo-exit {
+  to {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0.85);
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.todo-item.is-entering {
+  animation:
+    todo-enter var(--dur-base) var(--ease-out),
+    highlight-flash var(--dur-emphasis) var(--ease-out) var(--dur-base) both;
+}
+
+.todo-item.is-moved {
+  animation: highlight-flash var(--dur-emphasis) var(--ease-out);
+}
+
+.todo-item.is-exiting {
+  animation: todo-exit 160ms var(--ease-in) forwards;
+}
+
+.is-invalid {
+  animation: shake 240ms var(--ease-in-out);
+}
+
+/* Com movimento reduzido: sem shake (a borda e a mensagem bastam). */
+@media (prefers-reduced-motion: reduce) {
+  .is-invalid {
+    animation-name: none;
+  }
+}
+
+/* Troca de tema: classe aplicada no <html> por 300ms. */
+html.is-theme-switching *,
+html.is-theme-switching *::before,
+html.is-theme-switching *::after {
+  transition:
+    background-color var(--dur-slow) var(--ease-in-out),
+    color var(--dur-slow) var(--ease-in-out),
+    border-color var(--dur-slow) var(--ease-in-out),
+    fill var(--dur-slow) var(--ease-in-out) !important;
+}
+
+/* A regra acima (com !important) anularia a rotação/fade dos ícones do toggle. */
+html.is-theme-switching .theme-toggle svg {
+  transition:
+    opacity var(--dur-slow) var(--ease-in-out),
+    transform var(--dur-slow) var(--ease-in-out),
+    color var(--dur-slow) var(--ease-in-out) !important;
+}
