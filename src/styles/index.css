@@ -1,0 +1,9 @@
+/* Ponto de entrada de estilos. Ordem: fontes → tokens → base → layout → componentes → movimento. */
+@import './fonts.css';
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+@import './controls.css';
+@import './todo-item.css';
+@import './item-menu.css';
+@import './motion.css';
