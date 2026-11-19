@@ -1,0 +1,359 @@
+/* ============ TODO LIST / ITEM (§5.5) ============ */
+.todo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* <li> é o wrapper de colapso; o conteúdo focável é o div.todo-item (§6). */
+.todo-item-wrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--dur-slow) var(--ease-in-out);
+}
+
+.todo-item-wrap.is-collapsing {
+  grid-template-rows: 0fr;
+  overflow: clip;
+}
+
+/* Desvio mínimo: min-height:0/overflow só durante o colapso, para preservar os 60px do item. */
+.todo-item-wrap.is-collapsing > .todo-item {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Vizinhos deslizam durante o arraste. */
+.todo-list.is-reordering > .todo-item-wrap {
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    grid-template-rows var(--dur-slow) var(--ease-in-out);
+}
+
+.todo-item {
+  display: grid;
+  grid-template-columns: 44px 44px minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 60px;
+  padding-block: var(--space-2);
+  padding-inline-end: var(--space-1);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+  position: relative;
+  scroll-margin-block: var(--space-12);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.todo-item:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px; /* inset: não é cortado pela folha */
+}
+
+.todo-item.is-overdue {
+  box-shadow: inset 3px 0 0 var(--color-danger);
+}
+
+.todo-item__content {
+  display: grid;
+  gap: var(--space-1);
+  padding-block: var(--space-1);
+  min-width: 0;
+}
+
+.todo-item__text {
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-snug);
+  overflow-wrap: anywhere;
+  justify-self: start;
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+/* O risco fica num span inline: com box-decoration-break, um risco por linha. */
+.todo-item__ink {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 58%;
+  background-size: 0% 1.5px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size var(--dur-slow) var(--ease-in-out);
+}
+
+.todo-item.is-completed .todo-item__text {
+  color: var(--color-text-muted);
+}
+
+.todo-item.is-completed .todo-item__ink {
+  background-size: 100% 1.5px;
+}
+
+@media (forced-colors: active) {
+  .todo-item.is-completed .todo-item__text {
+    text-decoration: line-through;
+  }
+}
+
+.todo-item__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.todo-item__actions {
+  display: flex;
+  align-items: center;
+}
+
+.todo-item__actions[hidden] {
+  display: none;
+}
+
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.icon-btn:active {
+  background: var(--color-surface-sunken);
+  transform: translateY(1px);
+}
+
+@media (hover: hover) {
+  .todo-item:hover {
+    background: var(--color-surface-hover);
+  }
+  .todo-item:hover .icon-btn,
+  .todo-item:hover .drag-handle:not(.is-disabled) {
+    color: var(--color-text);
+  }
+  .todo-item:hover .icon-btn--danger {
+    color: var(--color-danger);
+  }
+}
+
+/* ============ CHECKBOX ============ */
+.checkbox {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.checkbox__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.checkbox__box {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--color-border-strong);
+  border-radius: 6px;
+  background: var(--color-surface);
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+
+.checkbox__box svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--color-check-fg);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+}
+
+.checkbox__input:checked + .checkbox__box {
+  background: var(--color-check-bg);
+  border-color: var(--color-check-bg);
+}
+
+.checkbox__input:checked + .checkbox__box svg {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--dur-base) var(--ease-out) 60ms;
+}
+
+.checkbox__input:focus-visible + .checkbox__box {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (forced-colors: active) {
+  .checkbox__box {
+    border-color: CanvasText;
+  }
+  .checkbox__input:checked + .checkbox__box {
+    background: Highlight;
+    border-color: Highlight;
+  }
+  .checkbox__input:checked + .checkbox__box svg {
+    stroke: HighlightText;
+  }
+}
+
+/* ============ DRAG HANDLE (§5.9) ============ */
+.drag-handle {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  cursor: grab;
+  touch-action: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle.is-disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* ============ ARRASTE ============ */
+.todo-item.is-placeholder {
+  background: var(--color-surface-sunken);
+  outline: 2px dashed var(--color-border-strong);
+  outline-offset: -6px;
+  box-shadow: none;
+}
+
+.todo-item.is-placeholder > * {
+  visibility: hidden;
+}
+
+.todo-item.is-drag-ghost {
+  position: fixed;
+  z-index: 10;
+  margin: 0;
+  box-shadow: var(--shadow-drag);
+  border-radius: var(--radius-md);
+  border-top-color: transparent;
+  transform: scale(1.02) rotate(-0.6deg);
+  cursor: grabbing;
+  pointer-events: none;
+}
+
+.todo-item.is-drag-ghost.is-settling {
+  transform: none;
+  transition:
+    top var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .todo-item.is-drag-ghost {
+    transform: none;
+  }
+}
+
+/* ============ EDIÇÃO (§5.6) ============ */
+.todo-item.is-editing {
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+}
+
+.todo-edit {
+  grid-column: 3 / -1;
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2) var(--space-1) 0;
+  min-width: 0;
+}
+
+.text-field--edit {
+  height: 44px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-base);
+  border-color: var(--color-accent);
+}
+
+@media (hover: hover) {
+  .text-field--edit:not([aria-invalid='true']):hover {
+    border-color: var(--color-accent);
+  }
+}
+
+.todo-edit__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ============ PRIORITY BADGE (§5.7) ============ */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+  font: 500 var(--text-xs) / 1.2 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.priority-badge--low {
+  color: var(--color-priority-low);
+}
+.priority-badge--medium {
+  color: var(--color-priority-medium);
+}
+.priority-badge--high {
+  color: var(--color-priority-high);
+}
+
+/* ============ DUE DATE (§5.8) ============ */
+.due-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: 500 var(--text-xs) / 1.2 var(--font-mono);
+  letter-spacing: var(--tracking-mono);
+  color: var(--color-text-muted);
+}
+
+.due-date--today {
+  color: var(--color-warning);
+}
+
+.due-date--overdue {
+  color: var(--color-danger);
+}
+
+/* Concluída: badge e data perdem a cor e mantêm o texto. */
+.todo-item.is-completed .priority-badge,
+.todo-item.is-completed .due-date {
+  color: var(--color-text-muted);
+}
+
+/* check-pop só ao concluir (classe aplicada no onChange), não ao montar. */
+.checkbox__box.is-popping {
+  animation: check-pop var(--dur-base) var(--ease-pop);
+}
