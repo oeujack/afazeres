@@ -1,0 +1,98 @@
+/* ============ POPOVER "MAIS AÇÕES" (§5.5) ============ */
+.item-menu {
+  margin: 0;
+  border: 0;
+  padding: var(--space-2);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-popover);
+  border-radius: var(--radius-lg);
+}
+
+.item-menu:popover-open {
+  display: grid;
+}
+
+.item-menu__title {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-menu__btn {
+  min-height: 48px;
+  padding: 0 var(--space-4);
+  width: 100%;
+  text-align: start;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  font-size: var(--text-base);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.item-menu__btn:not(:disabled):active {
+  background: var(--color-surface-sunken);
+}
+
+@media (hover: hover) {
+  .item-menu__btn:not(:disabled):hover {
+    background: var(--color-surface-hover);
+  }
+}
+
+.item-menu__note {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* Mobile: bottom sheet na zona do polegar. */
+@media (max-width: 599.98px) {
+  .item-menu {
+    position: fixed;
+    inset: auto 0 0 0;
+    margin: 0;
+    width: 100%;
+    max-width: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+  }
+  .item-menu::backdrop {
+    background: var(--color-backdrop);
+  }
+}
+
+/* ≥600: ancorado ao botão "⋯" (fallback JS quando não há anchor positioning). */
+@media (min-width: 600px) {
+  .item-menu {
+    width: 14rem;
+  }
+  .item-menu__title {
+    display: none;
+  }
+  .item-menu::backdrop {
+    background: transparent;
+  }
+  @supports (position-area: bottom) {
+    .item-menu {
+      position: fixed;
+      inset: auto;
+      margin: var(--space-1) 0;
+      position-area: bottom span-left;
+      position-try-fallbacks: flip-block;
+    }
+  }
+}
+
+/* Sem sombra em forced-colors: borda para o menu continuar sendo superfície. */
+@media (forced-colors: active) {
+  .item-menu {
+    border: 1px solid CanvasText;
+  }
+}
